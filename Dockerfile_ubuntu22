@@ -1,0 +1,39 @@
+# Build:
+#  docker build -f Dockerfile -t ubuntu_dev:22.04 .
+#
+# Use from CI/CD:
+#  image: ubuntu_dev:22.04
+
+FROM ubuntu:22.04
+RUN apt-get update && apt-get -y dist-upgrade
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install tzdata
+RUN apt-get -y install \
+    apt-utils debhelper gcc g++ make curl gpg gnupg2 \
+    sudo device-tree-compiler ccache gawk texinfo flex bison \
+    libmpc-dev libgmp-dev libmpfr-dev python3 libipt-dev fakeroot devscripts \
+    cmake ninja-build install-info python3-dev rsync \
+    autoconf automake libtool libtool-bin libncurses-dev unzip help2man
+
+ENV PKG_TARGET   ubuntu22
+ENV SECT         release
+
+ADD clone.sh /bin
+ADD build.sh /bin
+ADD build_env.sh /bin
+ADD tar_package.sh /bin
+
+RUN clone.sh
+
+RUN . build_env.sh && \
+	cat /${DIR_BINUTILS}/debian_gdb/control | \
+	sed -e "s/libpython3.8/libpython3.10/g" > control_ && \
+	mv control_ /${DIR_BINUTILS}/debian_gdb/control
+
+RUN build.sh binutils
+RUN build.sh gcc_stage1
+RUN build.sh linux-headers
+RUN build.sh newlib
+RUN build.sh glibc
+RUN build.sh musl
+RUN build.sh gcc_stage2
+RUN build.sh tarball
