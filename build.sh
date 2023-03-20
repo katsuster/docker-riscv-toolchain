@@ -97,11 +97,6 @@ build_gcc_stage1()
 	cp ${PRE_GLIBC}-gcc-stage1_${PKG_GCC}_amd64.deb  /${DIR_RESULT}/
 	cp ${PRE_MUSL}-gcc-stage1_${PKG_GCC}_amd64.deb   /${DIR_RESULT}/
 	rm -rf /${DIR_GCC}/pkg_${PKG_TARGET}
-
-	cd /${DIR_RESULT}
-	tar_package.sh ${PRE_NEWLIB}-gcc-stage1_${PKG_GCC}_amd64.deb ${TARGET_NEWLIB}
-	tar_package.sh ${PRE_GLIBC}-gcc-stage1_${PKG_GCC}_amd64.deb  ${TARGET_GLIBC}
-	tar_package.sh ${PRE_MUSL}-gcc-stage1_${PKG_GCC}_amd64.deb   ${TARGET_MUSL}
 }
 
 build_linux_headers()
